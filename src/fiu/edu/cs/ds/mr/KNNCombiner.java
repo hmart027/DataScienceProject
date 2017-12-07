@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
-public class KNNCombiner extends Reducer<IntWritable, WritableNeightbor, IntWritable, IntWritable>{
+public class KNNCombiner extends Reducer<IntWritable, WritableNeightbor, IntWritable, WritableNeightbor>{
 	
 	@Override
 	public void reduce(IntWritable testSampleIndex, Iterable<WritableNeightbor> neightbors, Context context)
@@ -36,7 +36,6 @@ public class KNNCombiner extends Reducer<IntWritable, WritableNeightbor, IntWrit
 				max = c;
 			}
 		}
-		context.write(testSampleIndex, new IntWritable(key));
-		
+		context.write(testSampleIndex, WritableNeightbor.getWritableNeightborArray(key, max));
 	}
 }
