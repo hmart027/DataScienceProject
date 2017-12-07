@@ -8,19 +8,13 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 public class KNNMap extends Mapper<LongWritable, Text, IntWritable, WritableNeightbor>{
 
-	int k = 1;
 	ArrayList<float[]> tSamples;
 	
-//	@Override
-//	public void setup(Context cxt) throws IOException {
-//		
-//	}
-//
-//	@Override
-//	public void cleanup(Context cxt) throws IOException {
-//		// TODO Auto-generated method stub
-//		
-//	}
+	@Override
+	public void setup(Context cxt) throws IOException {
+		String path = cxt.getConfiguration().get("TEST_PATH");
+		tSamples = KNNMapReduce.loadDataSet(path);
+	}
 
 	@Override
 	//Pass the training data to this method

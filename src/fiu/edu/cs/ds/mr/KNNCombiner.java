@@ -11,7 +11,7 @@ public class KNNCombiner extends Reducer<IntWritable, WritableNeightbor, IntWrit
 	@Override
 	public void reduce(IntWritable testSampleIndex, Iterable<WritableNeightbor> neightbors, Context context)
 			throws IOException, InterruptedException {
-		int k = 1;
+		int k = context.getConfiguration().getInt("k", 1);
 		// distance is the key here;
 		TreeMap<Double, Integer> nn = new TreeMap<>();
 		for (WritableNeightbor n : neightbors) {

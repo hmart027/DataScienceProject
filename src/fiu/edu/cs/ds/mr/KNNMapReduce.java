@@ -27,6 +27,9 @@ public class KNNMapReduce {
 		System.out.println("Starting Map Reduce.....");
 		
 		Configuration conf = new Configuration();
+		conf.setInt("k", 1);
+		conf.set("TEST_PATH", "zip.test");
+		
 		Job job = Job.getInstance(conf, "knn");
 		
 		job.setJarByClass(KNNMapReduce.class);
