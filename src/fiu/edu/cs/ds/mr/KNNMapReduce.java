@@ -27,7 +27,10 @@ public class KNNMapReduce {
 		System.out.println("Starting Map Reduce.....");
 		
 		Configuration conf = new Configuration();
-		conf.setInt("k", 1);
+		int k = 1;
+		if(args.length >= 5)
+			k = Integer.parseInt(args[4]);
+		conf.setInt("k", k);
 		conf.set("TEST_PATH", args[2]);
 		
 		Job job = Job.getInstance(conf, "knn");
@@ -47,7 +50,10 @@ public class KNNMapReduce {
 		FileInputFormat.addInputPath(job, new Path(args[1]));
 		FileOutputFormat.setOutputPath(job, new Path(args[3]));
 		
-		System.exit(job.waitForCompletion(true) ? 0 : 1);
+		long t0 = System.currentTimeMillis();
+		boolean status = job.waitForCompletion(true);
+		System.out.println("Ellapsed time: "+(float)(System.currentTimeMillis()-t0)/1000f);
+		System.exit(status? 0 : 1);
 	}
 	
 	public static ArrayList<float[]> loadDataSet(String path){

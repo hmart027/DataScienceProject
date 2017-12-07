@@ -20,10 +20,11 @@ public class KNNMain {
 		KNN knn = new KNN();
 		knn.train(trainSamples);
 		
-		long t0 = System.currentTimeMillis();
+		long t0 = 0;
 		int eCount = 0;
 		for(int k = 0; k<13; k++){
 			eCount = 0;
+			t0 = System.currentTimeMillis();
 			for(float[] s: testSamples){
 				float c = knn.classify(s, 2*k+1);
 				if((int)c!=(int)s[0]){
@@ -31,10 +32,8 @@ public class KNNMain {
 				}
 			}
 			System.out.println("Error Rate for k="+(2*k+1)+": "+((double)eCount/(double)testSamples.size()));
+			System.out.println("Ellapsed time: "+(float)(System.currentTimeMillis()-t0)/1000f);
 		}
-		
-		System.out.println("Ellapsed time: "+(float)(System.currentTimeMillis()-t0)/1000f);
-		
 	}
 	
 	public static ArrayList<float[]> loadDataSet(String path){
