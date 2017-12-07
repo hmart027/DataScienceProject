@@ -1,20 +1,17 @@
 package fiu.edu.cs.ds.mr;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapred.MapReduceBase;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.Reducer;
-import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapreduce.Reducer;
 
-public class KNNReduce extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable>{
+// Gets the index of the testDataset element and its closest neighbors. Returns the index of the testDataset element and its class
+public class KNNReduce extends Reducer<IntWritable, IntWritable, IntWritable, IntWritable>{
 
 	@Override
-	public void reduce(Text arg0, Iterator<IntWritable> arg1, OutputCollector<Text, IntWritable> arg2, Reporter arg3)
-			throws IOException {
-		// TODO Auto-generated method stub
+	public void reduce(IntWritable testSampleIndex, Iterable<IntWritable> classes, Context context)
+			throws IOException, InterruptedException {
+		context.write(testSampleIndex, classes.iterator().next());
 		
 	}
 

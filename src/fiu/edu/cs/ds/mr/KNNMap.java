@@ -1,40 +1,49 @@
 package fiu.edu.cs.ds.mr;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.Mapper;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapreduce.Mapper;
 
-public class KNNMap implements Mapper<LongWritable, Text, Text, IntWritable>{
+public class KNNMap extends Mapper<LongWritable, Text, IntWritable, WritableNeightbor>{
 
-	float[] tSample;
+	int k = 1;
+	ArrayList<float[]> tSamples;
 	
-	@Override
-	public void configure(JobConf arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void close() throws IOException {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void setup(Context cxt) throws IOException {
+//		
+//	}
+//
+//	@Override
+//	public void cleanup(Context cxt) throws IOException {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	@Override
 	//Pass the training data to this method
-	public void map(LongWritable arg0, Text arg1, OutputCollector<Text, IntWritable> arg2, Reporter arg3)
-			throws IOException {
+	public void map(LongWritable arg0, Text arg1, Context cxt)
+			throws IOException, InterruptedException {
 		String[] seg = arg1.toString().split(" ");
-		float[] s = new float[seg.length];
-		for(int i=0; i<s.length; i++){
-			s[i] = Float.parseFloat(seg[i]);
+		float[] trainSample = new float[seg.length];
+		for(int i=0; i<trainSample.length; i++){
+			trainSample[i] = Float.parseFloat(seg[i]);
 		}
-		
-		
+		for(int i=0; i<tSamples.size(); i++){
+			float[] tS = tSamples.get(i);
+			cxt.write(new IntWritable(i), WritableNeightbor.getWritableNeightborArray((int)trainSample[0], (float)getDistance(trainSample, tS)));
+		}
+	}
+	
+	public double getDistance(float[] trainS, float[] testS){
+		int l = testS.length;
+		double d = 0;
+		for(int i=1; i<l; i++){
+			d += (testS[i]-trainS[i])*(testS[i]-trainS[i]);
+		}
+		return Math.sqrt(d);
 	}
 
 }
