@@ -15,7 +15,7 @@ public class KNNMain {
 		System.out.println("Training samples: "+trainSamples.size());
 		System.out.println("Testing samples: "+testSamples.size());
 		
-		trainSamples = new ArrayList<>(trainSamples.subList(0, 1000));
+//		trainSamples = new ArrayList<>(trainSamples.subList(0, 1000));
 		
 		KNN knn = new KNN();
 		knn.train(trainSamples);

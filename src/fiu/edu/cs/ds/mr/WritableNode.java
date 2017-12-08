@@ -9,7 +9,7 @@ import org.apache.hadoop.io.Writable;
 
 public class WritableNode implements Writable{
 	private int k = 1;
-	private Float max = Float.MAX_VALUE;
+	private float max = Float.MAX_VALUE;
 	private TreeMap<Float, Integer> neighbors;
 	
 	public WritableNode(){
@@ -25,8 +25,10 @@ public class WritableNode implements Writable{
 	@Override
 	public void readFields(DataInput in) throws IOException {
 		k = in.readInt();
+		int s = in.readInt();
 		max = in.readFloat();
-		for(int i=0; i<k; i++){
+		neighbors = new TreeMap<>();
+		for(int i=0; i<s; i++){
 			Float k = in.readFloat();
 			Integer v = in.readInt();
 			neighbors.put(k, v);
@@ -41,7 +43,9 @@ public class WritableNode implements Writable{
 	
 	@Override
 	public void write(DataOutput out) throws IOException {
+		int s = neighbors.size();
 		out.writeInt(k);
+		out.writeInt(s);
 		out.writeFloat(max);
 		for(java.util.NavigableMap.Entry<Float,Integer> e: neighbors.entrySet()){
 			out.writeFloat(e.getKey());
@@ -53,16 +57,22 @@ public class WritableNode implements Writable{
 		// distance is the key here;
 		if(d<max){
 			neighbors.put(d, c);
-			if (neighbors.size() > k) {
+			while (neighbors.size() > k) {
 				neighbors.remove(neighbors.lastKey());
 			}
 			max = neighbors.lastKey();
+		}else{
+			if(neighbors.size() < k){
+				neighbors.put(d, c);
+				max = neighbors.lastKey();
+			}
 		}
 	}
 	
 	public void addNeighbors(WritableNode n){
-		if(n==null || n.k != k)
+		if(n==null || n.k != k){
 			return;
+		}
 		for(java.util.NavigableMap.Entry<Float,Integer> e: n.neighbors.entrySet()){
 			addNeighbor(e.getValue(), e.getKey());
 		}
@@ -85,6 +95,14 @@ public class WritableNode implements Writable{
 			}
 		}
 		return key;
+	}
+	
+	public int getNeighborCount(){
+		return neighbors.size();
+	}
+	
+	public int getK(){
+		return k;
 	}
 
 }

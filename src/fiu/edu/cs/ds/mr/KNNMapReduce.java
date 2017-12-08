@@ -19,30 +19,41 @@ public class KNNMapReduce {
 	public static void main(String[] args) throws Exception{
 		
 		int mapperCount = 1;
-		int reducerCount = 10;
+		int reducerCount = 1;
+		
+		Configuration conf = new Configuration();
 		
 		System.out.println("Loading Data.....");
-//		ArrayList<float[]> trainSamples = loadDataSet(args[1]);
-//		ArrayList<float[]> testSamples = loadDataSet(args[2]);
-//		System.out.println("Training samples: "+trainSamples.size());
-//		System.out.println("Testing samples: "+testSamples.size());
+		ArrayList<float[]> trainSamples = loadDataSet(args[1], conf);
+		ArrayList<float[]> testSamples = loadDataSet(args[2], conf);
+		System.out.println("Training samples: "+trainSamples.size());
+		System.out.println("Testing samples: "+testSamples.size());
 		
 		System.out.println("Starting Map Reduce.....");
 		
-		Configuration conf = new Configuration();
 		int k = 1;
-		if(args.length >= 5)
+		//Read number of NN to look at
+		if(args.length > 4)
 			k = Integer.parseInt(args[4]);
+
+		//Read number of desired mappers
+		if(args.length > 5)
+			mapperCount = Integer.parseInt(args[5]);
+
+		//Read number of reducers
+		if(args.length > 6)
+			reducerCount = Integer.parseInt(args[6]);
+		
 		conf.setInt("k", k);
 		conf.set("TEST_PATH", args[2]);
-		conf.setLong(FileInputFormat.SPLIT_MAXSIZE, 14512253/10);
+		conf.setLong(FileInputFormat.SPLIT_MAXSIZE, 14512253/mapperCount);
 		
 		Job job = Job.getInstance(conf, "knn");
 		
 		job.setJarByClass(KNNMapReduce.class);
 		
 		job.setMapOutputKeyClass(IntWritable.class);
-		job.setMapOutputValueClass(WritableNeighborArray.class);
+		job.setMapOutputValueClass(WritableNode.class);
 		
 		job.setOutputKeyClass(IntWritable.class);
 		job.setOutputValueClass(IntWritable.class);
@@ -59,6 +70,9 @@ public class KNNMapReduce {
 		long t0 = System.currentTimeMillis();
 		boolean status = job.waitForCompletion(true);
 		System.out.println("Ellapsed time: "+(float)(System.currentTimeMillis()-t0)/1000f);
+		
+		System.out.println("Error Rate: "+getErrorRate(testSamples, args[3], conf));
+		
 		System.exit(status? 0 : 1);
 	}
 	
@@ -114,5 +128,29 @@ public class KNNMapReduce {
 			d += (testS[i]-trainS[i])*(testS[i]-trainS[i]);
 		}
 		return Math.sqrt(d);
+	}
+
+	public static float getErrorRate(ArrayList<float[]> testSamples, String path, Configuration cfg){
+		float eRate = 1f/(float)testSamples.size();
+		int errorCount = 0;
+		try {
+			Path p = new Path(path+"/part-r-00000");
+			BufferedReader input = new BufferedReader(new InputStreamReader(p.getFileSystem(cfg).open(p)));
+			while(input.ready()){
+				String[] seg = input.readLine().split("\t");
+				int i = Integer.parseInt(seg[0]);
+				int c = Integer.parseInt(seg[1]);
+				if(c != (int)testSamples.get(i)[0])
+					errorCount++;
+			}
+			input.close();
+			System.out.println(errorCount);
+			return eRate*errorCount;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return -1;
 	}
 }
