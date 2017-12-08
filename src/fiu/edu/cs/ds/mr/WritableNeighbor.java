@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.Writable;
 
-public class WritableNeightbor implements Writable{
+public class WritableNeighbor implements Writable{
 	
 	private int c;
 	private float distance;
@@ -23,14 +23,14 @@ public class WritableNeightbor implements Writable{
 		out.writeFloat(distance);
 	}
 	
-	public static WritableNeightbor read(DataInput in) throws IOException {
-		WritableNeightbor w = new WritableNeightbor();
+	public static WritableNeighbor read(DataInput in) throws IOException {
+		WritableNeighbor w = new WritableNeighbor();
         w.readFields(in);
         return w;
      }
 	
-	public static WritableNeightbor getWritableNeightborArray(int c, float d){
-		WritableNeightbor out = new WritableNeightbor();
+	public static WritableNeighbor getWritableNeighbor(int c, float d){
+		WritableNeighbor out = new WritableNeighbor();
 		out.c = c;
 		out.distance = d;
 		return out;

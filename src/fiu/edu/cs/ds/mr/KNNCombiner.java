@@ -6,19 +6,23 @@ import java.util.TreeMap;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
-public class KNNCombiner extends Reducer<IntWritable, WritableNeightbor, IntWritable, WritableNeightbor>{
+public class KNNCombiner extends Reducer<IntWritable, WritableNeighborArray, IntWritable, WritableNeighborArray>{
 	
 	@Override
-	public void reduce(IntWritable testSampleIndex, Iterable<WritableNeightbor> neightbors, Context context)
+	public void reduce(IntWritable testSampleIndex, Iterable<WritableNeighborArray> neightbors, Context context)
 			throws IOException, InterruptedException {
+		
+//		System.out.println("Combining Key: "+testSampleIndex.get());
 		int k = context.getConfiguration().getInt("k", 1);
 		// distance is the key here;
 		TreeMap<Double, Integer> nn = new TreeMap<>();
-		for (WritableNeightbor n : neightbors) {
-			double d = n.getDistance();
-			nn.put(d, n.getClassification());
-			while (nn.size() > k) {
-				nn.remove(nn.lastKey());
+		for (WritableNeighborArray nA : neightbors) {
+			for(int i=0; i<nA.getSize(); i++){
+				double d = nA.getDistance(i);
+				nn.put(d, nA.getClassification(i));
+				while (nn.size() > k) {
+					nn.remove(nn.lastKey());
+				}
 			}
 		}
 		// class is mapped to the number of times it appears
@@ -36,6 +40,7 @@ public class KNNCombiner extends Reducer<IntWritable, WritableNeightbor, IntWrit
 				max = c;
 			}
 		}
-		context.write(testSampleIndex, WritableNeightbor.getWritableNeightborArray(key, max));
+		
+		context.write(testSampleIndex, new WritableNeighborArray(key, max));
 	}
 }
