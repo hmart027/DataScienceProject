@@ -22,10 +22,10 @@ public class KNN {
 	
 	public float classify(float[] testS, int kN){
 		//distance is the key here;
-		TreeMap<Double, float[]> nn = new TreeMap<>();
+		TreeMap<Float, float[]> nn = new TreeMap<>();
 		for(float[] trainS: trainingData){
 			double d = getDistance(trainS, testS);
-			nn.put(d, trainS);
+			nn.put((float)d, trainS);
 			while(nn.size()>kN){
 				nn.remove(nn.lastKey());
 			}
@@ -45,6 +45,34 @@ public class KNN {
 				max = c;
 			}
 		}
+		
+//		// class is mapped to the number of times it appears
+//		TreeMap<Integer, Float> c2D = new TreeMap<>();
+//		TreeMap<Integer, Integer> c2c = new TreeMap<>();
+//		float minD = 0;
+//		int key = 0;
+//		for (float d : nn.keySet()) {
+//			Integer cl = (int) nn.get(d)[0];
+//			Float c = c2D.get(cl);
+//			Integer count = c2c.get(cl);
+//			if (c == null)
+//				c = 0f;
+//			if (count == null)
+//				count = 0;
+//			c += d;
+//			count++;
+//			c2D.put(cl, c);
+//			c2c.put(cl, count);
+//		}
+//		key = c2D.firstKey();
+//		minD = c2D.get(key)/(float)c2c.get(key);
+//		for (int c : c2D.keySet()) {
+//			float d = c2D.get(c)/(float)c2c.get(c);
+//			if (c < minD) {
+//				key = c;
+//				minD = d;
+//			}
+//		}
 		
 		return key;
 	}

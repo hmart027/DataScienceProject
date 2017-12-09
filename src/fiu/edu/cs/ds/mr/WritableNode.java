@@ -79,21 +79,47 @@ public class WritableNode implements Writable{
 	}
 	
 	public int getClassification(){
-		// class is mapped to the number of times it appears
+
+		//class is mapped to the number of times it appears
 		TreeMap<Integer, Integer> count = new TreeMap<>();
 		int max = 0;
 		int key = 0;
-		for (int cl : neighbors.values()) {
+		for(float d: neighbors.keySet()){
+			Integer cl = neighbors.get(d);
 			Integer c = count.get(cl);
-			if (c == null)
+			if(c==null)
 				c = 0;
 			c++;
-			count.put(cl, c);			
+			count.put(cl, c);
 			if(c>max){
 				key = cl;
 				max = c;
 			}
 		}
+		
+//		// class is mapped to the number of times it appears
+//		TreeMap<Integer, Float> counts = new TreeMap<>();
+//		float minD = 0;
+//		int key = 0;
+//		for (float d: neighbors.keySet()) {
+//			Integer cl = neighbors.get(d);
+//			Float c = counts.get(cl);
+//			if (c == null)
+//				c = 0f;
+//			c+=d;
+//			counts.put(cl, c);			
+//			
+//		}
+//		key = counts.firstKey();
+//		minD = counts.get(key);
+//		for(int c: counts.keySet()){
+//			float d = counts.get(c);
+//			if(c<minD){
+//				key = c;
+//				minD = d;
+//			}
+//		}
+		
 		return key;
 	}
 	
@@ -105,6 +131,7 @@ public class WritableNode implements Writable{
 		return k;
 	}
 
+	@Override
 	public WritableNode clone(){
 		WritableNode n = new WritableNode();
 		n.k=k;
