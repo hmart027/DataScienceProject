@@ -9,11 +9,13 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class KNNReduce extends Reducer<IntWritable, WritableNode, IntWritable, IntWritable>{
 	
 	@Override
-	public void reduce(IntWritable testSampleIndex, Iterable<WritableNode> neightbors, Context context)
+	public void reduce(IntWritable testSampleIndex, Iterable<WritableNode> neighbors, Context context)
 			throws IOException, InterruptedException {
-		
-		WritableNode lN = neightbors.iterator().next();
-		context.write(testSampleIndex, new IntWritable(lN.getClassification()));
+		WritableNode tn = neighbors.iterator().next().clone();
+		for(WritableNode n : neighbors){
+			tn.addNeighbors(n);
+		}
+		context.write(testSampleIndex, new IntWritable(tn.getClassification()));
 		
 	}
 

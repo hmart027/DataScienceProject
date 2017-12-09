@@ -10,8 +10,7 @@ public class KNNCombiner extends Reducer<IntWritable, WritableNode, IntWritable,
 	@Override
 	public void reduce(IntWritable testSampleIndex, Iterable<WritableNode> neighbors, Context context)
 			throws IOException, InterruptedException {
-	
-		WritableNode tn = neighbors.iterator().next();
+		WritableNode tn = neighbors.iterator().next().clone();
 		for(WritableNode n : neighbors){
 			tn.addNeighbors(n);
 		}

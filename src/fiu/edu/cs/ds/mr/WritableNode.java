@@ -88,7 +88,7 @@ public class WritableNode implements Writable{
 			if (c == null)
 				c = 0;
 			c++;
-			count.put(cl, c);
+			count.put(cl, c);			
 			if(c>max){
 				key = cl;
 				max = c;
@@ -105,4 +105,11 @@ public class WritableNode implements Writable{
 		return k;
 	}
 
+	public WritableNode clone(){
+		WritableNode n = new WritableNode();
+		n.k=k;
+		n.max=max;
+		n.neighbors.putAll(neighbors);
+		return n;
+	}
 }
